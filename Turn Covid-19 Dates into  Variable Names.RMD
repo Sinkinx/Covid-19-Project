@@ -1,0 +1,153 @@
+---
+title: "Turn Covid-19 Dates in R column names and Select variables"
+author: "Brandon Tao"
+date: "9/21/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The USAfacts Covid-19 case and death csv files provides
+a good resource for class room examples, homework assignments
+and possibly class projects.  
+
+The csv files pose a challenge because the first row has
+dates that are not allowed as R variable names. This script
+produces dates that are valid column names and selects few dates
+to provide smaller csv files for student use. 
+
+The important class topics are the often used data wrangling functions
+and graphics.  The need to modify dates is relatively
+uncommon.  This script is shown in class and provided for
+possible future reference.  Modification of dates is not a
+quiz topic.
+
+
+```{r}
+library(tidyverse)
+library(anytime)
+```
+
+### 1. Read the USAfacts US county cases and deaths csv files 
+
+The US county files are in the Data directory of this project.
+
+```{r}
+
+cases  <- read_csv(
+  file='Data/cases.csv')
+
+deaths  <- read_csv(
+  file='Data/deaths.csv')
+
+#check <- names(cases)
+# check
+
+```
+
+The first two variable names, countyFIPs and "County Name",
+are county identifiers.  The next two names, state and stateFIPS,
+are state identifiers. The remaining column names are dates
+from 1/22/2020 to 9/20/2020.  
+  
+In R, variable names must start with a letter and have only
+letters, numbers, an underscore, or a period. 
+
+The County Name has a blank that can be omitted.
+  
+The dates start with a number. How can this be fixed?
+
+####  2. Make valid variable names for data
+
+We can fix date by putting a three letter month first
+and by separating the month, day and year with two underscores. 
+Here we use '_' but we could use  '.'.
+
+```{r}
+
+# Get the column names as vector
+tmp <- names(cases)
+
+# Fix the County Name in the first 4 names
+first4 <- tmp[1:4] 
+first4[2] <- 'CountyName'
+
+# get the dates by removing first 4 names 
+rest <- tmp[-(1:4)]
+rest[1:2]  # look as the first two
+ 
+# put numbers in the standard year month day order 
+rest <- anydate(rest)
+rest[1:2] 
+
+# Change the format
+# Below the symbol %b means use the 3 letter month name.
+# The symbol %d means use the number.
+# The symbol %Y means use the 4 digit number.
+# the separators '_' could be replaced by '.'.
+
+rest<- format(rest,"%b_%d_%Y") # Reformat '.'  
+rest[1:2]
+names(cases) <- c(first4,rest) # rename all columns
+
+```
+  
+Now we fix the deaths column names.  Note, this script and
+edited copy of the case script above.  It could be 
+turned into a function.  All that differs is the
+csv file name.  This file namee would the function argument.   
+    
+```{r}
+
+deaths  <- read_csv(file='Data/deaths.csv')
+tmp <- names(deaths)
+
+# Fix the County Name in the first for names
+first4 <- tmp[1:4] 
+first4[2] <- 'CountyName'
+
+# get the dates
+rest <- tmp[-(1:4)]
+ 
+# put numbers in the standard year month day order 
+rest <- anydate(rest)
+
+# Change the format
+# Below the symbol %b means use 3 letter month name.
+# The symbol %d means use the number
+# The symbol %Y means use the 4 digit number
+# the separators '_' could be replaced by '.'.
+rest<- format(rest,"%b_%d_%Y") # Reformat '.'  
+rest[1:2]
+names(deaths) <- c(first4,rest)
+```
+
+### 3. Select first four variables and the last 3 days that are 7 days apart
+
+```{r}
+
+# names(cases)
+
+cases_Sep6_13_20 <- select(cases, countyFIPS:stateFIPS,
+                   Sep_06_2020, Sep_13_2020, Sep_20_2020)
+names(cases_Sep6_13_20)
+
+deaths_Sep6_13_20 <- select(deaths, countyFIPS:stateFIPS,
+                    Sep_06_2020, Sep_13_2020, Sep_20_2020)
+
+
+names(cases_Sep6_13_20)
+names(deaths_Sep6_13_20)
+
+View(cases_Sep6_13_20)
+View(deaths_Sep6_13_20)
+```
+
+### 4. Save the csv files in Data folder for class use
+
+```{r}
+write_csv(cases_Sep6_13_20,path='Data/cases_Sep6_13_20.csv')
+write_csv(deaths_Sep6_13_20,path='Data/deaths_Sep6_13_20.csv')
+```

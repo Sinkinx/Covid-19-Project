@@ -1,0 +1,52 @@
+Name,Postal,Fips,County_n
+Alabama,AL,1,67
+Alaska,AK,2,29
+Arizona,AZ,4,15
+Arkansas,AR,5,75
+California,CA,6,58
+Colorado,CO,8,64
+Connecticut,CT,9,8
+Delaware,DE,10,3
+District of Columbia,DC,11,1
+Florida,FL,12,67
+Georgia,GA,13,159
+Hawaii,HI,15,5
+Idaho,ID,16,44
+Illinois,IL,17,102
+Indiana,IN,18,92
+Iowa,IA,19,99
+Kansas,KS,20,105
+Kentucky,KY,21,120
+Louisiana,LA,22,64
+Maine,ME,23,16
+Maryland,MD,24,24
+Massachusetts,MA,25,14
+Michigan,MI,26,83
+Minnesota,MN,27,87
+Mississippi,MS,28,82
+Missouri,MO,29,115
+Montana,MT,30,56
+Nebraska,NE,31,93
+Nevada,NV,32,17
+New Hampshire,NH,33,10
+New Jersey,NJ,34,21
+New Mexico,NM,35,33
+New York,NY,36,62
+North Carolina,NC,37,100
+North Dakota,ND,38,53
+Ohio,OH,39,88
+Oklahoma,OK,40,77
+Oregon,OR,41,36
+Pennsylvania,PA,42,67
+Rhode Island,RI,44,5
+South Carolina,SC,45,46
+South Dakota,SD,46,66
+Tennessee,TN,47,95
+Texas,TX,48,254
+Utah,UT,49,29
+Vermont,VT,50,14
+Virginia,VA,51,133
+Washington,WA,53,39
+West Virginia,WV,54,55
+Wisconsin,WI,55,72
+Wyoming,WY,56,23

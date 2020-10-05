@@ -1,0 +1,61 @@
+---
+title: "Covid-19 State Micromaps"
+author: "Brandon Tao"
+date: "9/22/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 0. Setup
+
+```{r message=FALSE}
+library(tidyverse)
+library(micromapST)
+load('Data/ST_rates_Sep6_13_20.RData')
+objects()
+```
+
+```{r}
+tmpCase  <- select(ST_case_rates,Postal,Sep6r,Sep13r)
+names(tmpCase) <- c('Postal','Sep6rc','Sep13rc')
+
+tmpDeath <- select(ST_death_rates,Postal,Sep6r,Sep13r)
+names(tmpDeath) <- c('Postal','Sep6rd','Sep13rd')
+
+bothRates <- inner_join(tmpCase,tmpDeath,by='Postal')
+bothRates <- data.frame(bothRates,row.names='Postal')
+
+```
+
+```{r}
+Desc <- data.frame(
+type = c('mapcum','id','arrow','arrow'),
+lab1 = c('','', 'Covid-19', 'Covid-19'),
+lab2 = c('','', 'Case Rates', 'Death Rates'),
+lab3 = c('','', 'Per 100,000', 'Per 100,000'), 
+col1 = c('','', 'Sep6rc',  'Sep6rd'),
+col2 = c('','', 'Sep13rc', 'Sep13rd')
+)
+```
+
+```{r fig.width= 7, fig.height=9}
+micromapST(
+ bothRates, panelDesc=Desc,
+ sortVar='Sep13rc',
+ title='Covid-19 Rates for Sept. 6, 2020 and Sept. 13, 2020',
+ plotNames='ab'
+ )
+```
+
+```{r fig.width= 7, fig.height=9}
+micromapST(
+ bothRates, panelDesc=Desc,
+ sortVar='Sep6rc',
+ title='Covid-19 Rates for Sept. 6, 2020 and Sept. 13, 2020',
+ plotNames='ab'
+ )
+```
+

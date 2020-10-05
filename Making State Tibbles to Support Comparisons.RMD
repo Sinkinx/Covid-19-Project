@@ -1,0 +1,108 @@
+---
+title: "Making State Tibbles To Support Graphical Comparisons"
+author: "Brandon Tao"
+date: "9/21/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### 0. Setup
+
+
+```{r message=FALSE}
+library(tidyverse)
+```
+
+State statistics are often available in csv files.  Here we
+read previously produced Covid-19 state case and death count
+csv files.  They have three September days to show short temporal
+trends.  
+
+### 1. Read csv files
+
+Note that this project has Data and Docs directories to provide
+more organized storage.  The data and documents are no
+long mixed with R scripts in a single directory.  One small cost is
+needing to specify the Data directory as shown in the script below. 
+
+```{r message=FALSE}
+state_pop <- read_csv('Data/State_Pop_2019.csv')
+names(state_pop) <- c('State','Postal','Fips','Pop')
+state_pop <- select(state_pop, Postal, Pop)
+
+cases <- read_csv('Data/cases_Sep6_13_20.csv')
+nam <- names(cases)
+nam[3] <- 'Postal'
+names(cases) <- nam
+
+deaths <- read_csv('Data/deaths_Sep6_13_20.csv')
+names(deaths) <- nam  # same as above
+```
+
+```{r}
+cases <- cases %>% filter(
+	countyFIPS != 2270 & countyFIPS != 6000)
+deaths <- deaths %>% filter(
+	countyFIPS != 2270 & countyFIPS != 6000)
+	
+```
+
+### 2. Use group_by and summarize to get state counts for chosen days
+  
+  
+```{r message=FALSE}
+
+ST_cases <- cases %>% group_by(Postal)%>%
+  summarize(Sep6=sum(Sep_06_2020),
+            Sep13=sum(Sep_13_2020),   
+            Sep20=sum(Sep_20_2020))
+
+
+ST_deaths<- deaths %>% group_by(Postal)%>%
+  summarize(Sep6=sum(Sep_06_2020),
+            Sep13=sum(Sep_13_2020),   
+            Sep20=sum(Sep_20_2020))
+
+```
+
+### 3. Use left_join and mutate to compute rates per 100000
+
+
+```{r}
+
+ST_case_rates  <- left_join(ST_cases,state_pop,by='Postal') %>% 
+           mutate(Sep6r=100000*Sep6/Pop,
+                  Sep13r=100000*Sep13/Pop,
+                  Sep20r=100000*Sep20/Pop,
+           type=rep('Cases',nrow(ST_cases)))
+
+ST_death_rates  <- left_join(ST_deaths,state_pop,by='Postal') %>% 
+           mutate(Sep6r=100000*Sep6/Pop,
+                  Sep13r=100000*Sep13/Pop,
+                  Sep20r=100000*Sep20/Pop,
+           type=rep('Deaths',nrow(ST_cases)))
+
+# A quick look
+ST_case_rates
+ST_death_rates
+
+```
+
+### 4. Save rate tibbles for use in graphics
+
+
+Here we save the tibbles into an RData file.  This is easy to load into 
+working memory.  Alternately we could write csv files and read them back in later.
+
+```{r}
+save(ST_case_rates,ST_death_rates,file='Data/ST_rates_Sep6_13_20.RData')
+```
+
+ 
+
+
+
